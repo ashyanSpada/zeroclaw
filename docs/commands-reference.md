@@ -9,6 +9,7 @@ Last verified: **February 21, 2026**.
 | Command | Purpose |
 |---|---|
 | `onboard` | Initialize workspace/config quickly or interactively |
+| `tui` | Launch unified TUI dashboard |
 | `agent` | Run interactive chat or single-message mode |
 | `gateway` | Start webhook and WhatsApp HTTP gateway |
 | `daemon` | Start supervised runtime (gateway + channels + optional heartbeat/scheduler) |
@@ -33,6 +34,7 @@ Last verified: **February 21, 2026**.
 ### `onboard`
 
 - `zeroclaw onboard`
+- `zeroclaw onboard --tui`
 - `zeroclaw onboard --interactive`
 - `zeroclaw onboard --channels-only`
 - `zeroclaw onboard --force`
@@ -41,6 +43,9 @@ Last verified: **February 21, 2026**.
 - `zeroclaw onboard --api-key <KEY> --provider <ID> --model <MODEL_ID> --memory <sqlite|lucid|markdown|none> --force`
 
 `onboard` safety behavior:
+
+- `zeroclaw onboard` now defaults to the TUI onboarding flow.
+- Use `zeroclaw onboard --interactive` for the legacy line-based wizard.
 
 - If `config.toml` already exists and you run `--interactive`, onboarding now offers two modes:
   - Full onboarding (overwrite `config.toml`)
@@ -58,6 +63,12 @@ Last verified: **February 21, 2026**.
 Tip:
 
 - In interactive chat, you can ask for route changes in natural language (for example “conversation uses kimi, coding uses gpt-5.3-codex”); the assistant can persist this via tool `model_routing_config`.
+
+### `tui`
+
+- `zeroclaw tui`
+
+Current phase-1 TUI dashboard exposes low-risk read-only views (for example status/providers/models/doctor/memory stats) while preserving existing CLI commands.
 
 ### `gateway` / `daemon`
 

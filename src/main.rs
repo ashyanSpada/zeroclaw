@@ -81,6 +81,7 @@ mod skillforge;
 mod skills;
 mod tools;
 mod tunnel;
+mod tui_app;
 mod util;
 
 use config::Config;
@@ -443,6 +444,9 @@ Examples:
         #[command(subcommand)]
         config_command: ConfigCommands,
     },
+
+    /// Launch the unified TUI dashboard
+    Tui,
 
     /// Generate shell completion script to stdout
     #[command(long_about = "\
@@ -1053,6 +1057,8 @@ async fn main() -> Result<()> {
                 Ok(())
             }
         },
+
+        Commands::Tui => tui_app::run(config).await,
     }
 }
 
@@ -1946,6 +1952,16 @@ mod tests {
             script.contains("zeroclaw"),
             "completion script should reference binary name"
         );
+    }
+
+    #[test]
+    fn tui_cli_parses() {
+        let cli = Cli::try_parse_from(["zeroclaw", "tui"]).expect("tui command should parse");
+
+        match cli.command {
+            Commands::Tui => {}
+            other => panic!("expected tui command, got {other:?}"),
+        }
     }
 
     #[test]

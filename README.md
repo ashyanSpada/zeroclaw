@@ -289,8 +289,14 @@ export PATH="$HOME/.cargo/bin:$PATH"
 # Quick setup (no prompts, optional model specification)
 zeroclaw onboard --api-key sk-... --provider openrouter [--model "openrouter/auto"]
 
-# Or interactive wizard
+# Default onboarding now opens the TUI wizard
+zeroclaw onboard
+
+# Use legacy line-based interactive wizard
 zeroclaw onboard --interactive
+
+# Launch the unified TUI dashboard
+zeroclaw tui
 
 # If config.toml already exists and you intentionally want to overwrite it
 zeroclaw onboard --force
@@ -961,7 +967,8 @@ See [aieos.org](https://aieos.org) for the full schema and live examples.
 
 | Command                                       | Description                                                                          |
 | --------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `onboard`                                     | Quick setup (default)                                                                |
+| `onboard`                                     | Setup/config command (default path opens onboarding TUI)                             |
+| `tui`                                         | Launch unified TUI dashboard (read-only command views in phase 1)                   |
 | `agent`                                       | Interactive or single-message chat mode                                              |
 | `gateway`                                     | Start webhook server (default: `127.0.0.1:42617`)                                    |
 | `daemon`                                      | Start long-running autonomous runtime                                                |
