@@ -26,17 +26,7 @@ use std::io::IsTerminal;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 use tokio::fs;
-
-// ── Project context collected during wizard ──────────────────────
-
-/// User-provided personalization baked into workspace MD files.
-#[derive(Debug, Clone, Default)]
-pub struct ProjectContext {
-    pub user_name: String,
-    pub timezone: String,
-    pub agent_name: String,
-    pub communication_style: String,
-}
+use super::shared::ProjectContext;
 
 // ── Banner ───────────────────────────────────────────────────────
 

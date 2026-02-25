@@ -2,7 +2,7 @@ use crate::{
     config::{ComposioConfig, Config, HardwareConfig, MemoryConfig, SecretsConfig},
     hardware,
     memory::{memory_backend_profile, selectable_memory_backends},
-    onboard::wizard,
+    onboard::shared,
 };
 use anyhow::{Context, Result};
 use tokio::fs;
@@ -45,7 +45,7 @@ pub async fn finalize_config(app: &App<'_>) -> Result<Config> {
         app.provider.trim().to_string()
     };
     let model = if app.model.trim().is_empty() {
-        wizard::default_model_for_provider(&provider)
+        shared::default_model_for_provider(&provider)
     } else {
         app.model.trim().to_string()
     };
@@ -124,7 +124,7 @@ pub async fn finalize_config(app: &App<'_>) -> Result<Config> {
     crate::config::schema::persist_active_workspace_config_dir(config_dir).await?;
 
     if app.mode == OnboardingMode::FullOnboarding {
-        let default_ctx = wizard::ProjectContext {
+        let default_ctx = shared::ProjectContext {
             user_name: {
                 let typed = App::text_value(&app.project_user_input);
                 if typed.is_empty() {
@@ -151,7 +151,7 @@ pub async fn finalize_config(app: &App<'_>) -> Result<Config> {
             },
             communication_style: app.project_style_text(),
         };
-        wizard::scaffold_workspace(&config.workspace_dir, &default_ctx).await?;
+        shared::scaffold_workspace(&config.workspace_dir, &default_ctx).await?;
 
         let has_channels = config
             .channels_config

@@ -9,7 +9,7 @@ use crate::{
         DiscordConfig, SlackConfig, StreamMode, TelegramConfig, WebhookConfig,
     },
     memory::{memory_backend_profile, selectable_memory_backends},
-    onboard::wizard,
+    onboard::shared,
 };
 use std::collections::BTreeSet;
 
@@ -32,12 +32,12 @@ impl App<'_> {
         self.loading = true;
         self.status_message = format!("Fetching models for {}...", self.provider);
 
-        let mut candidates: BTreeSet<String> = wizard::curated_models_for_provider(&self.provider)
+        let mut candidates: BTreeSet<String> = shared::curated_models_for_provider(&self.provider)
             .into_iter()
             .map(|(id, _)| id)
             .collect();
 
-        match wizard::fetch_live_models_for_provider(
+        match shared::fetch_live_models_for_provider(
             &self.provider,
             &self.api_key,
             self.api_url.as_deref(),
@@ -57,7 +57,7 @@ impl App<'_> {
         }
 
         if candidates.is_empty() {
-            candidates.insert(wizard::default_model_for_provider(&self.provider));
+            candidates.insert(shared::default_model_for_provider(&self.provider));
         }
 
         let mut merged: Vec<String> = candidates.into_iter().collect();
@@ -322,7 +322,7 @@ impl App<'_> {
             WizardStep::WorkspaceSetup => self.step = WizardStep::ProviderTierSelection,
             WizardStep::ProviderTierSelection => {
                 let tier_idx = self.provider_tier_list.selected().unwrap_or(0);
-                self.current_tier_providers = wizard::get_providers_for_tier(tier_idx);
+                self.current_tier_providers = shared::get_providers_for_tier(tier_idx);
                 if self.current_tier_providers.is_empty() {
                     self.step = WizardStep::CustomProviderUrlEntry;
                 } else {

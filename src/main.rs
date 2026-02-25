@@ -135,7 +135,7 @@ struct Cli {
 enum Commands {
     /// Initialize your workspace and configuration
     Onboard {
-        /// Run the full interactive wizard (default is quick setup)
+        /// Run the full line-based interactive wizard (legacy)
         #[arg(long)]
         interactive: bool,
 
@@ -143,7 +143,7 @@ enum Commands {
         #[arg(long)]
         force: bool,
 
-        /// Use the TUI wizard (richer interface)
+        /// Use the TUI wizard (default when no quick args are provided)
         #[arg(long)]
         tui: bool,
 
@@ -151,17 +151,17 @@ enum Commands {
         #[arg(long)]
         channels_only: bool,
 
-        /// API key (used in quick mode, ignored with --interactive)
+        /// API key (used in quick mode, ignored with --interactive/--tui)
         #[arg(long)]
         api_key: Option<String>,
 
-        /// Provider name (used in quick mode, default: openrouter)
+        /// Provider name (used in quick mode)
         #[arg(long)]
         provider: Option<String>,
         /// Model ID override (used in quick mode)
         #[arg(long)]
         model: Option<String>,
-        /// Memory backend (sqlite, lucid, markdown, none) - used in quick mode, default: sqlite
+        /// Memory backend (sqlite, lucid, markdown, none) - used in quick mode
         #[arg(long)]
         memory: Option<String>,
     },
@@ -697,7 +697,8 @@ async fn main() -> Result<()> {
 
     tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
 
-    // Onboard runs quick setup by default, or the interactive wizard with --interactive.
+    // Onboard runs TUI wizard by default, legacy wizard with --interactive,
+    // and quick setup when explicit quick arguments are provided.
     // The onboard wizard uses reqwest::blocking internally, which creates its own
     // Tokio runtime. To avoid "Cannot drop a runtime in a context where blocking is
     // not allowed", we run the wizard on a blocking thread via spawn_blocking.
@@ -738,9 +739,12 @@ async fn main() -> Result<()> {
         if channels_only && force {
             bail!("--channels-only does not accept --force");
         }
+        let quick_mode_requested =
+            api_key.is_some() || provider.is_some() || model.is_some() || memory.is_some();
+
         let config = if channels_only {
             onboard::run_channels_repair_wizard().await
-        } else if tui {
+        } else if tui || (!interactive && !quick_mode_requested) {
             onboard::tui::run_wizard(force).await
         } else if interactive {
             onboard::run_wizard(force).await

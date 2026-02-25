@@ -1,4 +1,4 @@
-use crate::{config::ChannelsConfig, onboard::wizard};
+use crate::{config::ChannelsConfig, onboard::shared};
 use ratatui::widgets::ListState;
 use std::path::PathBuf;
 use tui_textarea::TextArea;
@@ -223,7 +223,7 @@ impl<'a> App<'a> {
             model_list: ListState::default(),
             api_key_input,
             model_custom_input,
-            provider_tiers: wizard::get_provider_tiers(),
+            provider_tiers: shared::get_provider_tiers(),
             current_tier_providers: Vec::new(),
             available_models: Vec::new(),
             channel_choice: ChannelChoice::CliOnly,

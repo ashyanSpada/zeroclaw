@@ -1,5 +1,6 @@
 pub mod wizard;
 pub mod tui;
+pub mod shared;
 
 // Re-exported for CLI and external use
 #[allow(unused_imports)]
