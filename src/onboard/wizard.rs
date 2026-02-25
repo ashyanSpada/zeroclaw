@@ -687,7 +687,7 @@ const MINIMAX_ONBOARD_MODELS: [(&str, &str); 5] = [
     ("MiniMax-M2", "MiniMax M2 (legacy)"),
 ];
 
-fn default_model_for_provider(provider: &str) -> String {
+pub fn default_model_for_provider(provider: &str) -> String {
     match canonical_provider_name(provider) {
         "anthropic" => "claude-sonnet-4-5-20250929".into(),
         "openai" => "gpt-5.2".into(),
@@ -718,7 +718,7 @@ fn default_model_for_provider(provider: &str) -> String {
     }
 }
 
-fn curated_models_for_provider(provider_name: &str) -> Vec<(String, String)> {
+pub fn curated_models_for_provider(provider_name: &str) -> Vec<(String, String)> {
     match canonical_provider_name(provider_name) {
         "openrouter" => vec![
             (
@@ -1467,7 +1467,7 @@ fn resolve_live_models_endpoint(
     models_endpoint_for_provider(provider_name).map(str::to_string)
 }
 
-fn fetch_live_models_for_provider(
+pub fn fetch_live_models_for_provider(
     provider_name: &str,
     api_key: &str,
     provider_api_url: Option<&str>,
@@ -2106,27 +2106,19 @@ async fn setup_workspace() -> Result<(PathBuf, PathBuf)> {
     Ok((workspace_dir, config_path))
 }
 
-// ── Step 2: Provider & API Key ───────────────────────────────────
-
-#[allow(clippy::too_many_lines)]
-async fn setup_provider(workspace_dir: &Path) -> Result<(String, String, String, Option<String>)> {
-    // ── Tier selection ──
-    let tiers = vec![
+pub fn get_provider_tiers() -> Vec<&'static str> {
+    vec![
         "⭐ Recommended (OpenRouter, Venice, Anthropic, OpenAI, Gemini)",
         "⚡ Fast inference (Groq, Fireworks, Together AI, NVIDIA NIM)",
         "🌐 Gateway / proxy (Vercel AI, Cloudflare AI, Amazon Bedrock)",
         "🔬 Specialized (Moonshot/Kimi, GLM/Zhipu, MiniMax, Qwen/DashScope, Qianfan, Z.AI, Synthetic, OpenCode Zen, Cohere)",
         "🏠 Local / private (Ollama, llama.cpp server, vLLM — no API key needed)",
         "🔧 Custom — bring your own OpenAI-compatible API",
-    ];
+    ]
+}
 
-    let tier_idx = Select::new()
-        .with_prompt("  Select provider category")
-        .items(&tiers)
-        .default(0)
-        .interact()?;
-
-    let providers: Vec<(&str, &str)> = match tier_idx {
+pub fn get_providers_for_tier(tier_idx: usize) -> Vec<(&'static str, &'static str)> {
+    match tier_idx {
         0 => vec![
             (
                 "openrouter",
@@ -2196,8 +2188,24 @@ async fn setup_provider(workspace_dir: &Path) -> Result<(String, String, String,
             ("cohere", "Cohere — Command R+ & embeddings"),
         ],
         4 => local_provider_choices(),
-        _ => vec![], // Custom — handled below
-    };
+        _ => vec![], // Custom — handled by caller
+    }
+}
+
+// ── Step 2: Provider & API Key ───────────────────────────────────
+
+#[allow(clippy::too_many_lines)]
+async fn setup_provider(workspace_dir: &Path) -> Result<(String, String, String, Option<String>)> {
+    // ── Tier selection ──
+    let tiers = get_provider_tiers();
+
+    let tier_idx = Select::new()
+        .with_prompt("  Select provider category")
+        .items(&tiers)
+        .default(0)
+        .interact()?;
+
+    let providers = get_providers_for_tier(tier_idx);
 
     // ── Custom / BYOP flow ──
     if providers.is_empty() {
@@ -2824,7 +2832,7 @@ async fn setup_provider(workspace_dir: &Path) -> Result<(String, String, String,
     Ok((provider_name.to_string(), api_key, model, provider_api_url))
 }
 
-fn local_provider_choices() -> Vec<(&'static str, &'static str)> {
+pub fn local_provider_choices() -> Vec<(&'static str, &'static str)> {
     vec![
         ("ollama", "Ollama — local models (Llama, Mistral, Phi)"),
         (

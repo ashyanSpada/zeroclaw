@@ -143,6 +143,10 @@ enum Commands {
         #[arg(long)]
         force: bool,
 
+        /// Use the TUI wizard (richer interface)
+        #[arg(long)]
+        tui: bool,
+
         /// Reconfigure channels only (fast repair flow)
         #[arg(long)]
         channels_only: bool,
@@ -700,6 +704,7 @@ async fn main() -> Result<()> {
     if let Commands::Onboard {
         interactive,
         force,
+        tui,
         channels_only,
         api_key,
         provider,
@@ -709,6 +714,7 @@ async fn main() -> Result<()> {
     {
         let interactive = *interactive;
         let force = *force;
+        let tui = *tui;
         let channels_only = *channels_only;
         let api_key = api_key.clone();
         let provider = provider.clone();
@@ -717,6 +723,12 @@ async fn main() -> Result<()> {
 
         if interactive && channels_only {
             bail!("Use either --interactive or --channels-only, not both");
+        }
+        if tui && channels_only {
+            bail!("Use either --tui or --channels-only, not both");
+        }
+        if tui && interactive {
+            bail!("Use either --tui or --interactive, not both");
         }
         if channels_only
             && (api_key.is_some() || provider.is_some() || model.is_some() || memory.is_some())
@@ -728,6 +740,8 @@ async fn main() -> Result<()> {
         }
         let config = if channels_only {
             onboard::run_channels_repair_wizard().await
+        } else if tui {
+            onboard::tui::run_wizard(force).await
         } else if interactive {
             onboard::run_wizard(force).await
         } else {
