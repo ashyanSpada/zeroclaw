@@ -968,7 +968,7 @@ See [aieos.org](https://aieos.org) for the full schema and live examples.
 | Command                                       | Description                                                                          |
 | --------------------------------------------- | ------------------------------------------------------------------------------------ |
 | `onboard`                                     | Setup/config command (default path opens onboarding TUI)                             |
-| `tui`                                         | Launch unified TUI dashboard (read-only command views in phase 1)                   |
+| `tui`                                         | Launch unified TUI dashboard (read-only status/providers/channels/auth/models/doctor/memory views) |
 | `agent`                                       | Interactive or single-message chat mode                                              |
 | `gateway`                                     | Start webhook server (default: `127.0.0.1:42617`)                                    |
 | `daemon`                                      | Start long-running autonomous runtime                                                |

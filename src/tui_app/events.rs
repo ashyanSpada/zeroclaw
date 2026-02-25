@@ -32,7 +32,7 @@ pub async fn run_app_loop<B: Backend>(
                         app.menu.select(Some(next));
                     }
                     KeyCode::Enter => {
-                        app.output = actions::run(app.selected_item(), config);
+                        app.output = actions::run(app.selected_item(), config).await;
                     }
                     _ => {}
                 }

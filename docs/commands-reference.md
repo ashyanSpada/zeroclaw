@@ -68,7 +68,7 @@ Tip:
 
 - `zeroclaw tui`
 
-Current phase-1 TUI dashboard exposes low-risk read-only views (for example status/providers/models/doctor/memory stats) while preserving existing CLI commands.
+Current phase-1/2 TUI dashboard exposes broad command coverage (status/providers/config schema/estop/channels/auth profiles/models/doctor/memory/hardware/peripherals) and includes executable actions such as models refresh, channel doctor, doctor runs, memory list, hardware discover, and peripheral list, while preserving existing CLI commands.
 
 ### `gateway` / `daemon`
 
